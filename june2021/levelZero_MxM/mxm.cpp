@@ -148,6 +148,8 @@ int main(int argc, char **argv) {
         moduleDesc.pBuildFlags = "";
 
         auto status = zeModuleCreate(context, device, &moduleDesc, &module, &buildLog);
+        printf("size of pointer:%zu\n",sizeof(void*));
+        printf("size of pointer:%zu\n",sizeof(uint64_t*));
         if (status != ZE_RESULT_SUCCESS) {
             // print log
             size_t szLog = 0;
