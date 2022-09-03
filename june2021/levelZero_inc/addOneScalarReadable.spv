@@ -1,0 +1,52 @@
+; SPIR-V
+; Version: 1.4
+; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Bound: 18
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Linkage
+               OpCapability Kernel
+          %1 = OpExtInstImport "OpenCL.std"
+               OpMemoryModel Physical32 OpenCL
+               OpEntryPoint Kernel %13 "addone"
+               OpSource OpenCL_C 102000
+               OpName %addone "addone"
+               OpName %a "a"
+               OpName %b "b"
+               OpName %entry "entry"
+               OpName %add "add"
+               OpName %a_0 "a"
+               OpName %b_0 "b"
+               OpDecorate %addone LinkageAttributes "addone" Export
+               OpDecorate %a FuncParamAttr NoCapture
+               OpDecorate %a FuncParamAttr NoWrite
+               OpDecorate %a Alignment 4
+               OpDecorate %b FuncParamAttr NoCapture
+               OpDecorate %b Alignment 4
+               OpDecorate %add NoSignedWrap
+               OpDecorate %a_0 FuncParamAttr NoCapture
+               OpDecorate %a_0 FuncParamAttr NoWrite
+               OpDecorate %a_0 Alignment 4
+               OpDecorate %b_0 FuncParamAttr NoCapture
+               OpDecorate %b_0 Alignment 4
+       %uint = OpTypeInt 32 0
+     %uint_1 = OpConstant %uint 1
+       %void = OpTypeVoid
+%_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
+          %5 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint
+     %addone = OpFunction %void None %5
+          %a = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+          %b = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+      %entry = OpLabel
+         %10 = OpLoad %uint %a Aligned 4
+        %add = OpIAdd %uint %10 %uint_1
+               OpStore %b %add Aligned 4
+               OpReturn
+               OpFunctionEnd
+         %13 = OpFunction %void None %5
+        %a_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+        %b_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %16 = OpLabel
+         %17 = OpFunctionCall %void %addone %a_0 %b_0
+               OpReturn
+               OpFunctionEnd
