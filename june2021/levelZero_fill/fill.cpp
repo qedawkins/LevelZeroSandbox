@@ -25,15 +25,11 @@
         std::terminate(); \
     }
 
-// Sequential Matrix Multiplication to validate results
-void matrixMultiply(uint32_t *a, uint32_t *b, uint32_t *c, int m, int k, int n) {
-    for (int i = 0; i < m; i++) {
+// add one to each element
+void fill(uint32_t *a, int n) {
+    for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            int sum = 0;
-            for (int l = 0; l < k; l++) {
-                sum += a[i * m + l] * b[l * n + j];
-            }
-            c[i * m + j] = sum;
+            a[i * n + j] = 5;
         }
     }
 }
@@ -101,12 +97,8 @@ int main(int argc, char **argv) {
     VALIDATECALL(zeCommandListCreate(context, device, &cmdListDesc, &cmdList));
 
     // Create two buffers
-    const uint32_t m = 1;
-    const uint32_t k = 4;
-    const uint32_t n = 3;
-    constexpr size_t leftAllocSize = m * k * sizeof(int);
-    constexpr size_t rightAllocSize = k * n * sizeof(int);
-    constexpr size_t resultAllocSize = m * n * sizeof(int);
+    const uint32_t items = 1;
+    constexpr size_t allocSize = items * items * sizeof(int);
     ze_device_mem_alloc_desc_t memAllocDesc = {ZE_STRUCTURE_TYPE_DEVICE_MEM_ALLOC_DESC};
     //memAllocDesc.flags = ZE_DEVICE_MEM_ALLOC_FLAG_BIAS_UNCACHED;
     memAllocDesc.ordinal = 0;
@@ -115,42 +107,18 @@ int main(int argc, char **argv) {
     //hostDesc.flags = ZE_HOST_MEM_ALLOC_FLAG_BIAS_UNCACHED;
 
 
-    void *sharedA = nullptr;
-    VALIDATECALL(zeMemAllocShared(context, &memAllocDesc, &hostDesc, leftAllocSize, 1, device, &sharedA));
-
-    void *sharedB = nullptr;
-    VALIDATECALL(zeMemAllocShared(context, &memAllocDesc, &hostDesc, rightAllocSize, 1, device, &sharedB));
-
     void *dstResult = nullptr;
-    VALIDATECALL(zeMemAllocShared(context, &memAllocDesc, &hostDesc, resultAllocSize, 1, device, &dstResult));
+    VALIDATECALL(zeMemAllocShared(context, &memAllocDesc, &hostDesc, allocSize, 1, device, &dstResult));
 
     // memory initialization
     constexpr uint8_t val = 2;
-    memset(sharedA, val, leftAllocSize);
-    memset(sharedB, 3, rightAllocSize);
-    memset(dstResult, 0, resultAllocSize);
-
-    // Just making the matmul results more human verifiable
-    {
-        uint32_t *dstInt = static_cast<uint32_t *>(dstResult);
-        uint32_t *srcA = static_cast<uint32_t *>(sharedA);
-        uint32_t *srcB = static_cast<uint32_t *>(sharedB);
-        for (uint32_t i = 0; i < leftAllocSize; i++) {
-            srcA[i] = 2;
-        }
-        for (uint32_t i = 0; i < rightAllocSize; i++) {
-            srcB[i] = 3;
-        }
-        for (uint32_t i = 0; i < resultAllocSize; i++) {
-            dstInt[i] = 0;
-        }
-    }
+    memset(dstResult, val, allocSize);
 
     // Module Initialization
     ze_module_handle_t module = nullptr;
     ze_kernel_handle_t kernel = nullptr;
 
-    std::ifstream file("matrixMultiply.spv", std::ios::binary);
+    std::ifstream file("fill.spv", std::ios::binary);
 
     if (file.is_open()) {
         file.seekg(0, file.end);
@@ -182,30 +150,25 @@ int main(int argc, char **argv) {
         VALIDATECALL(zeModuleBuildLogDestroy(buildLog));   
 
         ze_kernel_desc_t kernelDesc = {};
-        kernelDesc.pKernelName = "mxm";
+        kernelDesc.pKernelName = "fill";
         VALIDATECALL(zeKernelCreate(module, &kernelDesc, &kernel));
 
-        uint32_t groupSizeX = m;
-        uint32_t groupSizeY = n;
+        uint32_t groupSizeX = 32u;
+        uint32_t groupSizeY = 32u;
         uint32_t groupSizeZ = 1u;
-        VALIDATECALL(zeKernelSuggestGroupSize(kernel, m, n, 1U, &groupSizeX, &groupSizeY, &groupSizeZ));
+        VALIDATECALL(zeKernelSuggestGroupSize(kernel, items, items, 1U, &groupSizeX, &groupSizeY, &groupSizeZ));
         VALIDATECALL(zeKernelSetGroupSize(kernel, groupSizeX, groupSizeY, groupSizeZ));
 
         std::cout << "Group X: " << groupSizeX << std::endl;
         std::cout << "Group Y: " << groupSizeY << std::endl;
 
         // Push arguments
-        VALIDATECALL(zeKernelSetArgumentValue(kernel, 0, sizeof(sharedA), &sharedA));
-        VALIDATECALL(zeKernelSetArgumentValue(kernel, 1, sizeof(sharedB), &sharedB));
-        VALIDATECALL(zeKernelSetArgumentValue(kernel, 2, sizeof(dstResult), &dstResult));
-        VALIDATECALL(zeKernelSetArgumentValue(kernel, 3, sizeof(int), &m));
-        VALIDATECALL(zeKernelSetArgumentValue(kernel, 4, sizeof(int), &k));
-        VALIDATECALL(zeKernelSetArgumentValue(kernel, 5, sizeof(int), &n));
+        VALIDATECALL(zeKernelSetArgumentValue(kernel, 0, sizeof(dstResult), &dstResult));
 
         // Kernel thread-dispatch
         ze_group_count_t dispatch;
-        dispatch.groupCountX = m / groupSizeX;
-        dispatch.groupCountY = n / groupSizeY;
+        dispatch.groupCountX = items / groupSizeX;
+        dispatch.groupCountY = items / groupSizeY;
         dispatch.groupCountZ = 1;
 
         // Launch kernel on the GPU
@@ -228,13 +191,11 @@ int main(int argc, char **argv) {
     // Validate
     bool outputValidationSuccessful = true;
 
-    uint32_t *resultSeq = (uint32_t *)malloc(resultAllocSize);
+    uint32_t *resultSeq = (uint32_t *)malloc(allocSize);
     uint32_t *dstInt = static_cast<uint32_t *>(dstResult);
-    uint32_t *srcA = static_cast<uint32_t *>(sharedA);
-    uint32_t *srcB = static_cast<uint32_t *>(sharedB);
 
     std::chrono::steady_clock::time_point beginSeq = std::chrono::steady_clock::now();
-    matrixMultiply(srcA, srcB, resultSeq, m, k, n);
+    fill(resultSeq, items);
     std::chrono::steady_clock::time_point endSeq = std::chrono::steady_clock::now();
 
     auto elapsedParallel = std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count();
@@ -244,11 +205,12 @@ int main(int argc, char **argv) {
     auto speedup = elapsedSequential / elapsedParallel;
     std::cout << "Speedup = " << speedup << "x" << std::endl;
 
-    std::cout << "GPU First = " << dstInt[0] << std::endl;
-    std::cout << "SEQ First = " << resultSeq[0] << std::endl;
-    for (int i = 0; i < m; i++) {
+    int n = items;
+    for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            if (resultSeq[i * m + j] != dstInt[i * m + j]) {
+            std::cout << resultSeq[i * n + j] << std::endl;
+            std::cout << dstInt[i * n + j] << std::endl;
+            if (resultSeq[i * n + j] != dstInt[i * n + j]) {
                 outputValidationSuccessful = false;
                 break;
             } 
@@ -256,12 +218,10 @@ int main(int argc, char **argv) {
     }
 
 
-    std::cout << "\nMatrix Multiply validation " << (outputValidationSuccessful ? "PASSED" : "FAILED") << "\n";
+    std::cout << "\nFill validation " << (outputValidationSuccessful ? "PASSED" : "FAILED") << "\n";
 
     // Cleanup
     VALIDATECALL(zeMemFree(context, dstResult));
-    VALIDATECALL(zeMemFree(context, sharedA));
-    VALIDATECALL(zeMemFree(context, sharedB));
     VALIDATECALL(zeCommandListDestroy(cmdList));
     VALIDATECALL(zeCommandQueueDestroy(cmdQueue));
     VALIDATECALL(zeContextDestroy(context));

@@ -1,35 +1,37 @@
 ; SPIR-V
 ; Version: 1.4
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
-; Bound: 51
+; Bound: 55
 ; Schema: 0
                OpCapability Addresses
                OpCapability Linkage
                OpCapability Kernel
           %1 = OpExtInstImport "OpenCL.std"
                OpMemoryModel Physical32 OpenCL
-               OpEntryPoint Kernel %44 "mxm" %__spirv_BuiltInGlobalInvocationId
+               OpEntryPoint Kernel %46 "mxm" %__spirv_BuiltInGlobalInvocationId
                OpSource OpenCL_C 102000
                OpName %__spirv_BuiltInGlobalInvocationId "__spirv_BuiltInGlobalInvocationId"
                OpName %mxm "mxm"
                OpName %a "a"
                OpName %b "b"
                OpName %c "c"
+               OpName %m "m"
+               OpName %k "k"
                OpName %n "n"
                OpName %entry "entry"
                OpName %for_cond_cleanup "for.cond.cleanup"
                OpName %for_body "for.body"
                OpName %call "call"
                OpName %call1 "call1"
-               OpName %cmp23 "cmp23"
+               OpName %cmp21 "cmp21"
                OpName %mul "mul"
                OpName %add6 "add6"
                OpName %sum_0_lcssa "sum.0.lcssa"
                OpName %add8 "add8"
                OpName %arrayidx9 "arrayidx9"
                OpName %inc "inc"
-               OpName %k_025 "k.025"
-               OpName %sum_024 "sum.024"
+               OpName %i_023 "i.023"
+               OpName %sum_022 "sum.022"
                OpName %add "add"
                OpName %arrayidx "arrayidx"
                OpName %mul2 "mul2"
@@ -40,6 +42,8 @@
                OpName %a_0 "a"
                OpName %b_0 "b"
                OpName %c_0 "c"
+               OpName %m_0 "m"
+               OpName %k_0 "k"
                OpName %n_0 "n"
                OpDecorate %__spirv_BuiltInGlobalInvocationId LinkageAttributes "__spirv_BuiltInGlobalInvocationId" Import
                OpDecorate %__spirv_BuiltInGlobalInvocationId Constant
@@ -76,22 +80,24 @@
 %_ptr_Input_v3uint = OpTypePointer Input %v3uint
        %void = OpTypeVoid
 %_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
-          %8 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint %uint
+          %8 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint %uint %uint %uint
        %bool = OpTypeBool
 %__spirv_BuiltInGlobalInvocationId = OpVariable %_ptr_Input_v3uint Input
         %mxm = OpFunction %void None %8
           %a = OpFunctionParameter %_ptr_CrossWorkgroup_uint
           %b = OpFunctionParameter %_ptr_CrossWorkgroup_uint
           %c = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+          %m = OpFunctionParameter %uint
+          %k = OpFunctionParameter %uint
           %n = OpFunctionParameter %uint
       %entry = OpLabel
-         %17 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
-       %call = OpCompositeExtract %uint %17 0
          %19 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
-      %call1 = OpCompositeExtract %uint %19 1
-      %cmp23 = OpSGreaterThan %bool %n %uint_0
-        %mul = OpIMul %uint %call %n
-               OpBranchConditional %cmp23 %for_body %for_cond_cleanup
+       %call = OpCompositeExtract %uint %19 0
+         %21 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
+      %call1 = OpCompositeExtract %uint %21 1
+      %cmp21 = OpSGreaterThan %bool %k %uint_0
+        %mul = OpIMul %uint %call %m
+               OpBranchConditional %cmp21 %for_body %for_cond_cleanup
 %for_cond_cleanup = OpLabel
 %sum_0_lcssa = OpPhi %uint %uint_0 %entry %add6 %for_body
        %add8 = OpIAdd %uint %mul %call1
@@ -99,27 +105,29 @@
                OpStore %arrayidx9 %sum_0_lcssa Aligned 4
                OpReturn
    %for_body = OpLabel
-      %k_025 = OpPhi %uint %inc %for_body %uint_0 %entry
-    %sum_024 = OpPhi %uint %add6 %for_body %uint_0 %entry
-        %add = OpIAdd %uint %k_025 %mul
+      %i_023 = OpPhi %uint %inc %for_body %uint_0 %entry
+    %sum_022 = OpPhi %uint %add6 %for_body %uint_0 %entry
+        %add = OpIAdd %uint %i_023 %mul
    %arrayidx = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %a %add
-         %34 = OpLoad %uint %arrayidx Aligned 4
-       %mul2 = OpIMul %uint %k_025 %n
+         %36 = OpLoad %uint %arrayidx Aligned 4
+       %mul2 = OpIMul %uint %i_023 %n
        %add3 = OpIAdd %uint %mul2 %call1
   %arrayidx4 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %b %add3
-         %38 = OpLoad %uint %arrayidx4 Aligned 4
-       %mul5 = OpIMul %uint %38 %34
-       %add6 = OpIAdd %uint %mul5 %sum_024
-        %inc = OpIAdd %uint %k_025 %uint_1
-        %cmp = OpSLessThan %bool %inc %n
+         %40 = OpLoad %uint %arrayidx4 Aligned 4
+       %mul5 = OpIMul %uint %40 %36
+       %add6 = OpIAdd %uint %mul5 %sum_022
+        %inc = OpIAdd %uint %i_023 %uint_1
+        %cmp = OpSLessThan %bool %inc %k
                OpBranchConditional %cmp %for_body %for_cond_cleanup
                OpFunctionEnd
-         %44 = OpFunction %void None %8
+         %46 = OpFunction %void None %8
         %a_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
         %b_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
         %c_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+        %m_0 = OpFunctionParameter %uint
+        %k_0 = OpFunctionParameter %uint
         %n_0 = OpFunctionParameter %uint
-         %49 = OpLabel
-         %50 = OpFunctionCall %void %mxm %a_0 %b_0 %c_0 %n_0
+         %53 = OpLabel
+         %54 = OpFunctionCall %void %mxm %a_0 %b_0 %c_0 %m_0 %k_0 %n_0
                OpReturn
                OpFunctionEnd

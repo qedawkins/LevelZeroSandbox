@@ -7,7 +7,7 @@
                OpCapability Linkage
                OpCapability Kernel
           %1 = OpExtInstImport "OpenCL.std"
-               OpMemoryModel Physical32 OpenCL
+               OpMemoryModel Physical64 OpenCL
                OpEntryPoint Kernel %13 "addone"
                OpSource OpenCL_C 102000
                OpName %addone "addone"
