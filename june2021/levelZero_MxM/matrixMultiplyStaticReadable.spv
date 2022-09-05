@@ -1,7 +1,7 @@
 ; SPIR-V
 ; Version: 1.4
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
-; Bound: 81
+; Bound: 78
 ; Schema: 0
                OpCapability Addresses
                OpCapability Linkage
@@ -15,9 +15,6 @@
                OpName %a "a"
                OpName %b "b"
                OpName %c "c"
-               OpName %m "m"
-               OpName %k "k"
-               OpName %n "n"
                OpName %entry "entry"
                OpName %for_cond "for.cond"
                OpName %for_body "for.body"
@@ -26,11 +23,11 @@
                OpName %a_addr "a.addr"
                OpName %b_addr "b.addr"
                OpName %c_addr "c.addr"
-               OpName %m_addr "m.addr"
-               OpName %k_addr "k.addr"
-               OpName %n_addr "n.addr"
                OpName %idx "idx"
                OpName %jdx "jdx"
+               OpName %m "m"
+               OpName %k "k"
+               OpName %n "n"
                OpName %sum "sum"
                OpName %i "i"
                OpName %call "call"
@@ -51,9 +48,6 @@
                OpName %a_0 "a"
                OpName %b_0 "b"
                OpName %c_0 "c"
-               OpName %m_0 "m"
-               OpName %k_0 "k"
-               OpName %n_0 "n"
                OpDecorate %__spirv_BuiltInGlobalInvocationId LinkageAttributes "__spirv_BuiltInGlobalInvocationId" Import
                OpDecorate %__spirv_BuiltInGlobalInvocationId Constant
                OpDecorate %__spirv_BuiltInGlobalInvocationId BuiltIn GlobalInvocationId
@@ -64,11 +58,11 @@
                OpDecorate %a_addr Alignment 4
                OpDecorate %b_addr Alignment 4
                OpDecorate %c_addr Alignment 4
-               OpDecorate %m_addr Alignment 4
-               OpDecorate %k_addr Alignment 4
-               OpDecorate %n_addr Alignment 4
                OpDecorate %idx Alignment 4
                OpDecorate %jdx Alignment 4
+               OpDecorate %m Alignment 4
+               OpDecorate %k Alignment 4
+               OpDecorate %n Alignment 4
                OpDecorate %sum Alignment 4
                OpDecorate %i Alignment 4
                OpDecorate %mul2 NoSignedWrap
@@ -79,13 +73,16 @@
                OpDecorate %b_0 Alignment 4
                OpDecorate %c_0 Alignment 4
        %uint = OpTypeInt 32 0
+     %uint_2 = OpConstant %uint 2
+     %uint_4 = OpConstant %uint 4
+     %uint_3 = OpConstant %uint 3
      %uint_0 = OpConstant %uint 0
      %uint_1 = OpConstant %uint 1
      %v3uint = OpTypeVector %uint 3
 %_ptr_Input_v3uint = OpTypePointer Input %v3uint
        %void = OpTypeVoid
 %_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
-          %8 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint %uint %uint %uint
+          %8 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint
 %_ptr_Function__ptr_CrossWorkgroup_uint = OpTypePointer Function %_ptr_CrossWorkgroup_uint
 %_ptr_Function_uint = OpTypePointer Function %uint
        %bool = OpTypeBool
@@ -94,44 +91,41 @@
           %a = OpFunctionParameter %_ptr_CrossWorkgroup_uint
           %b = OpFunctionParameter %_ptr_CrossWorkgroup_uint
           %c = OpFunctionParameter %_ptr_CrossWorkgroup_uint
-          %m = OpFunctionParameter %uint
-          %k = OpFunctionParameter %uint
-          %n = OpFunctionParameter %uint
       %entry = OpLabel
      %a_addr = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
      %b_addr = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
      %c_addr = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
-     %m_addr = OpVariable %_ptr_Function_uint Function
-     %k_addr = OpVariable %_ptr_Function_uint Function
-     %n_addr = OpVariable %_ptr_Function_uint Function
         %idx = OpVariable %_ptr_Function_uint Function
         %jdx = OpVariable %_ptr_Function_uint Function
+          %m = OpVariable %_ptr_Function_uint Function
+          %k = OpVariable %_ptr_Function_uint Function
+          %n = OpVariable %_ptr_Function_uint Function
         %sum = OpVariable %_ptr_Function_uint Function
           %i = OpVariable %_ptr_Function_uint Function
                OpStore %a_addr %a Aligned 4
                OpStore %b_addr %b Aligned 4
                OpStore %c_addr %c Aligned 4
-               OpStore %m_addr %m Aligned 4
-               OpStore %k_addr %k Aligned 4
-               OpStore %n_addr %n Aligned 4
-         %33 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
-       %call = OpCompositeExtract %uint %33 0
+         %30 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
+       %call = OpCompositeExtract %uint %30 0
                OpStore %idx %call Aligned 4
-         %35 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
-      %call1 = OpCompositeExtract %uint %35 1
+         %32 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
+      %call1 = OpCompositeExtract %uint %32 1
                OpStore %jdx %call1 Aligned 4
+               OpStore %m %uint_2 Aligned 4
+               OpStore %k %uint_4 Aligned 4
+               OpStore %n %uint_3 Aligned 4
                OpStore %sum %uint_0 Aligned 4
                OpStore %i %uint_0 Aligned 4
                OpBranch %for_cond
    %for_cond = OpLabel
          %38 = OpLoad %uint %i Aligned 4
-         %39 = OpLoad %uint %k_addr Aligned 4
+         %39 = OpLoad %uint %k Aligned 4
         %cmp = OpSLessThan %bool %38 %39
                OpBranchConditional %cmp %for_body %for_end
    %for_body = OpLabel
          %42 = OpLoad %_ptr_CrossWorkgroup_uint %a_addr Aligned 4
          %43 = OpLoad %uint %idx Aligned 4
-         %44 = OpLoad %uint %m_addr Aligned 4
+         %44 = OpLoad %uint %m Aligned 4
         %mul = OpIMul %uint %43 %44
          %46 = OpLoad %uint %i Aligned 4
         %add = OpIAdd %uint %mul %46
@@ -139,7 +133,7 @@
          %49 = OpLoad %uint %arrayidx Aligned 4
          %50 = OpLoad %_ptr_CrossWorkgroup_uint %b_addr Aligned 4
          %51 = OpLoad %uint %i Aligned 4
-         %52 = OpLoad %uint %n_addr Aligned 4
+         %52 = OpLoad %uint %n Aligned 4
        %mul2 = OpIMul %uint %51 %52
          %54 = OpLoad %uint %jdx Aligned 4
        %add3 = OpIAdd %uint %mul2 %54
@@ -159,7 +153,7 @@
          %64 = OpLoad %uint %sum Aligned 4
          %65 = OpLoad %_ptr_CrossWorkgroup_uint %c_addr Aligned 4
          %66 = OpLoad %uint %idx Aligned 4
-         %67 = OpLoad %uint %m_addr Aligned 4
+         %67 = OpLoad %uint %m Aligned 4
        %mul7 = OpIMul %uint %66 %67
          %69 = OpLoad %uint %jdx Aligned 4
        %add8 = OpIAdd %uint %mul7 %69
@@ -171,10 +165,7 @@
         %a_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
         %b_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
         %c_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
-        %m_0 = OpFunctionParameter %uint
-        %k_0 = OpFunctionParameter %uint
-        %n_0 = OpFunctionParameter %uint
-         %79 = OpLabel
-         %80 = OpFunctionCall %void %mxm %a_0 %b_0 %c_0 %m_0 %k_0 %n_0
+         %76 = OpLabel
+         %77 = OpFunctionCall %void %mxm %a_0 %b_0 %c_0
                OpReturn
                OpFunctionEnd

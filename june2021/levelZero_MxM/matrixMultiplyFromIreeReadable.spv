@@ -1,0 +1,80 @@
+; SPIR-V
+; Version: 1.0
+; Generator: Khronos; 22
+; Bound: 52
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Kernel
+               OpMemoryModel Physical32 OpenCL
+               OpEntryPoint Kernel %forward_dispatch_0_matmul_1x3x4 "forward_dispatch_0_matmul_1x3x4" %__builtin_var_LocalInvocationId__
+               OpExecutionMode %forward_dispatch_0_matmul_1x3x4 LocalSize 32 1 1
+               OpName %__builtin_var_LocalInvocationId__ "__builtin_var_LocalInvocationId__"
+               OpName %forward_dispatch_0_matmul_1x3x4 "forward_dispatch_0_matmul_1x3x4"
+               OpDecorate %__builtin_var_LocalInvocationId__ BuiltIn LocalInvocationId
+       %uint = OpTypeInt 32 0
+     %v3uint = OpTypeVector %uint 3
+%_ptr_Input_v3uint = OpTypePointer Input %v3uint
+%__builtin_var_LocalInvocationId__ = OpVariable %_ptr_Input_v3uint Input
+       %void = OpTypeVoid
+      %float = OpTypeFloat 32
+%_ptr_CrossWorkgroup_float = OpTypePointer CrossWorkgroup %float
+          %5 = OpTypeFunction %void %_ptr_CrossWorkgroup_float %_ptr_CrossWorkgroup_float %_ptr_CrossWorkgroup_float
+    %uint_32 = OpConstant %uint 32
+     %uint_4 = OpConstant %uint 4
+     %uint_1 = OpConstant %uint 1
+     %uint_3 = OpConstant %uint 3
+     %uint_0 = OpConstant %uint 0
+    %float_0 = OpConstant %float 0
+       %bool = OpTypeBool
+%forward_dispatch_0_matmul_1x3x4 = OpFunction %void None %5
+         %10 = OpFunctionParameter %_ptr_CrossWorkgroup_float
+         %11 = OpFunctionParameter %_ptr_CrossWorkgroup_float
+         %12 = OpFunctionParameter %_ptr_CrossWorkgroup_float
+         %13 = OpLabel
+         %20 = OpLoad %v3uint %__builtin_var_LocalInvocationId__
+         %21 = OpCompositeExtract %uint %20 0
+               OpBranch %22
+         %22 = OpLabel
+         %25 = OpPhi %uint %29 %23 %21 %13
+         %27 = OpSLessThan %bool %25 %uint_3
+               OpLoopMerge %24 %23 None
+               OpBranchConditional %27 %23 %24
+         %23 = OpLabel
+         %28 = OpPtrAccessChain %_ptr_CrossWorkgroup_float %12 %25
+               OpStore %28 %float_0
+         %29 = OpIAdd %uint %25 %uint_32
+               OpBranch %22
+         %24 = OpLabel
+               OpBranch %30
+         %30 = OpLabel
+         %33 = OpPhi %uint %51 %34 %21 %24
+         %35 = OpSLessThan %bool %33 %uint_3
+               OpLoopMerge %32 %31 None
+               OpBranchConditional %35 %31 %32
+         %31 = OpLabel
+               OpBranch %36
+         %36 = OpLabel
+         %38 = OpPhi %uint %50 %37 %uint_0 %31
+         %39 = OpSLessThan %bool %38 %uint_4
+               OpLoopMerge %34 %37 None
+               OpBranchConditional %39 %37 %34
+         %37 = OpLabel
+         %40 = OpPtrAccessChain %_ptr_CrossWorkgroup_float %10 %38
+         %41 = OpLoad %float %40
+         %42 = OpIMul %uint %38 %uint_3
+         %43 = OpIAdd %uint %42 %33
+         %44 = OpPtrAccessChain %_ptr_CrossWorkgroup_float %11 %43
+         %45 = OpLoad %float %44
+         %46 = OpPtrAccessChain %_ptr_CrossWorkgroup_float %12 %33
+         %47 = OpLoad %float %46
+         %48 = OpFMul %float %41 %45
+         %49 = OpFAdd %float %47 %48
+               OpStore %46 %49
+         %50 = OpIAdd %uint %38 %uint_1
+               OpBranch %36
+         %34 = OpLabel
+         %51 = OpIAdd %uint %33 %uint_32
+               OpBranch %30
+         %32 = OpLabel
+               OpReturn
+               OpFunctionEnd

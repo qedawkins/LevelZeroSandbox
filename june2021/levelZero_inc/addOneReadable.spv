@@ -1,6 +1,6 @@
 ; SPIR-V
-; Version: 1.4
-; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Version: 1.0
+; Generator: Khronos SPIR-V Tools Assembler; 0
 ; Bound: 31
 ; Schema: 0
                OpCapability Addresses
@@ -8,7 +8,7 @@
                OpCapability Kernel
           %1 = OpExtInstImport "OpenCL.std"
                OpMemoryModel Physical32 OpenCL
-               OpEntryPoint Kernel %25 "addone" %__spirv_BuiltInGlobalInvocationId
+               OpEntryPoint Kernel %2 "addone" %__spirv_BuiltInGlobalInvocationId
                OpSource OpenCL_C 102000
                OpName %__spirv_BuiltInGlobalInvocationId "__spirv_BuiltInGlobalInvocationId"
                OpName %addone "addone"
@@ -47,27 +47,27 @@
 %_ptr_Input_v3uint = OpTypePointer Input %v3uint
        %void = OpTypeVoid
 %_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
-          %8 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint %uint
+         %25 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint %uint
 %__spirv_BuiltInGlobalInvocationId = OpVariable %_ptr_Input_v3uint Input
-     %addone = OpFunction %void None %8
+     %addone = OpFunction %void None %25
           %a = OpFunctionParameter %_ptr_CrossWorkgroup_uint
           %b = OpFunctionParameter %_ptr_CrossWorkgroup_uint
           %n = OpFunctionParameter %uint
       %entry = OpLabel
-         %14 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
-       %call = OpCompositeExtract %uint %14 0
-         %16 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
-      %call1 = OpCompositeExtract %uint %16 1
+         %26 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
+       %call = OpCompositeExtract %uint %26 0
+         %27 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
+      %call1 = OpCompositeExtract %uint %27 1
         %mul = OpIMul %uint %call %n
         %add = OpIAdd %uint %mul %call1
    %arrayidx = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %a %add
-         %21 = OpLoad %uint %arrayidx Aligned 4
-       %add2 = OpIAdd %uint %21 %uint_1
+         %28 = OpLoad %uint %arrayidx Aligned 4
+       %add2 = OpIAdd %uint %28 %uint_1
   %arrayidx5 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %b %add
                OpStore %arrayidx5 %add2 Aligned 4
                OpReturn
                OpFunctionEnd
-         %25 = OpFunction %void None %8
+          %2 = OpFunction %void None %25
         %a_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
         %b_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
         %n_0 = OpFunctionParameter %uint
