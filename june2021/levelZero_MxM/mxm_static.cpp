@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
     ze_module_handle_t module = nullptr;
     ze_kernel_handle_t kernel = nullptr;
 
-    std::ifstream file("matrixMultiplyStatic.spv", std::ios::binary);
+    std::ifstream file("matrixMultiplyStaticNoIdx.spv", std::ios::binary);
 
     if (file.is_open()) {
         file.seekg(0, file.end);

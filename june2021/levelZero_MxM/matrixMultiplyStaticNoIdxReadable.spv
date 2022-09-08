@@ -1,14 +1,14 @@
 ; SPIR-V
 ; Version: 1.4
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
-; Bound: 77
+; Bound: 66
 ; Schema: 0
                OpCapability Addresses
                OpCapability Linkage
                OpCapability Kernel
           %1 = OpExtInstImport "OpenCL.std"
-               OpMemoryModel Physical32 OpenCL
-               OpEntryPoint Kernel %71 "mxm" %__spirv_BuiltInGlobalInvocationId
+               OpMemoryModel Physical64 OpenCL
+               OpEntryPoint Kernel %60 "mxm" %__spirv_BuiltInGlobalInvocationId
                OpSource OpenCL_C 102000
                OpName %__spirv_BuiltInGlobalInvocationId "__spirv_BuiltInGlobalInvocationId"
                OpName %mxm "mxm"
@@ -23,7 +23,6 @@
                OpName %a_addr "a.addr"
                OpName %b_addr "b.addr"
                OpName %c_addr "c.addr"
-               OpName %idx "idx"
                OpName %jdx "jdx"
                OpName %m "m"
                OpName %k "k"
@@ -31,20 +30,15 @@
                OpName %sum "sum"
                OpName %i "i"
                OpName %call "call"
-               OpName %call1 "call1"
                OpName %cmp "cmp"
+               OpName %arrayidx "arrayidx"
                OpName %mul "mul"
                OpName %add "add"
-               OpName %arrayidx "arrayidx"
+               OpName %arrayidx1 "arrayidx1"
                OpName %mul2 "mul2"
                OpName %add3 "add3"
-               OpName %arrayidx4 "arrayidx4"
-               OpName %mul5 "mul5"
-               OpName %add6 "add6"
                OpName %inc "inc"
-               OpName %mul7 "mul7"
-               OpName %add8 "add8"
-               OpName %arrayidx9 "arrayidx9"
+               OpName %arrayidx4 "arrayidx4"
                OpName %a_0 "a"
                OpName %b_0 "b"
                OpName %c_0 "c"
@@ -58,16 +52,15 @@
                OpDecorate %a_addr Alignment 4
                OpDecorate %b_addr Alignment 4
                OpDecorate %c_addr Alignment 4
-               OpDecorate %idx Alignment 4
                OpDecorate %jdx Alignment 4
                OpDecorate %m Alignment 4
                OpDecorate %k Alignment 4
                OpDecorate %n Alignment 4
                OpDecorate %sum Alignment 4
                OpDecorate %i Alignment 4
+               OpDecorate %mul NoSignedWrap
                OpDecorate %mul2 NoSignedWrap
-               OpDecorate %mul5 NoSignedWrap
-               OpDecorate %add6 NoSignedWrap
+               OpDecorate %add3 NoSignedWrap
                OpDecorate %inc NoSignedWrap
                OpDecorate %a_0 Alignment 4
                OpDecorate %b_0 Alignment 4
@@ -94,7 +87,6 @@
      %a_addr = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
      %b_addr = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
      %c_addr = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
-        %idx = OpVariable %_ptr_Function_uint Function
         %jdx = OpVariable %_ptr_Function_uint Function
           %m = OpVariable %_ptr_Function_uint Function
           %k = OpVariable %_ptr_Function_uint Function
@@ -104,12 +96,9 @@
                OpStore %a_addr %a Aligned 4
                OpStore %b_addr %b Aligned 4
                OpStore %c_addr %c Aligned 4
-         %30 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
-       %call = OpCompositeExtract %uint %30 0
-               OpStore %idx %call Aligned 4
-         %32 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
-      %call1 = OpCompositeExtract %uint %32 1
-               OpStore %jdx %call1 Aligned 4
+         %29 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
+       %call = OpCompositeExtract %uint %29 0
+               OpStore %jdx %call Aligned 4
                OpStore %m %uint_1 Aligned 4
                OpStore %k %uint_4 Aligned 4
                OpStore %n %uint_3 Aligned 4
@@ -117,54 +106,46 @@
                OpStore %i %uint_0 Aligned 4
                OpBranch %for_cond
    %for_cond = OpLabel
-         %38 = OpLoad %uint %i Aligned 4
-         %39 = OpLoad %uint %k Aligned 4
-        %cmp = OpSLessThan %bool %38 %39
+         %35 = OpLoad %uint %i Aligned 4
+         %36 = OpLoad %uint %k Aligned 4
+        %cmp = OpSLessThan %bool %35 %36
                OpBranchConditional %cmp %for_body %for_end
    %for_body = OpLabel
-         %42 = OpLoad %_ptr_CrossWorkgroup_uint %a_addr Aligned 4
-         %43 = OpLoad %uint %idx Aligned 4
-         %44 = OpLoad %uint %m Aligned 4
-        %mul = OpIMul %uint %43 %44
-         %46 = OpLoad %uint %i Aligned 4
-        %add = OpIAdd %uint %mul %46
-   %arrayidx = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %42 %add
-         %49 = OpLoad %uint %arrayidx Aligned 4
-         %50 = OpLoad %_ptr_CrossWorkgroup_uint %b_addr Aligned 4
-         %51 = OpLoad %uint %i Aligned 4
-         %52 = OpLoad %uint %n Aligned 4
-       %mul2 = OpIMul %uint %51 %52
-         %54 = OpLoad %uint %jdx Aligned 4
-       %add3 = OpIAdd %uint %mul2 %54
-  %arrayidx4 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %50 %add3
-         %57 = OpLoad %uint %arrayidx4 Aligned 4
-       %mul5 = OpIMul %uint %49 %57
-         %59 = OpLoad %uint %sum Aligned 4
-       %add6 = OpIAdd %uint %59 %mul5
-               OpStore %sum %add6 Aligned 4
+         %39 = OpLoad %_ptr_CrossWorkgroup_uint %a_addr Aligned 4
+         %40 = OpLoad %uint %i Aligned 4
+   %arrayidx = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %39 %40
+         %42 = OpLoad %uint %arrayidx Aligned 4
+         %43 = OpLoad %_ptr_CrossWorkgroup_uint %b_addr Aligned 4
+         %44 = OpLoad %uint %i Aligned 4
+         %45 = OpLoad %uint %n Aligned 4
+        %mul = OpIMul %uint %44 %45
+         %47 = OpLoad %uint %jdx Aligned 4
+        %add = OpIAdd %uint %mul %47
+  %arrayidx1 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %43 %add
+         %50 = OpLoad %uint %arrayidx1 Aligned 4
+       %mul2 = OpIMul %uint %42 %50
+         %52 = OpLoad %uint %sum Aligned 4
+       %add3 = OpIAdd %uint %52 %mul2
+               OpStore %sum %add3 Aligned 4
                OpBranch %for_inc
     %for_inc = OpLabel
-         %61 = OpLoad %uint %i Aligned 4
-        %inc = OpIAdd %uint %61 %uint_1
+         %54 = OpLoad %uint %i Aligned 4
+        %inc = OpIAdd %uint %54 %uint_1
                OpStore %i %inc Aligned 4
                OpBranch %for_cond
     %for_end = OpLabel
-         %63 = OpLoad %uint %sum Aligned 4
-         %64 = OpLoad %_ptr_CrossWorkgroup_uint %c_addr Aligned 4
-         %65 = OpLoad %uint %idx Aligned 4
-         %66 = OpLoad %uint %m Aligned 4
-       %mul7 = OpIMul %uint %65 %66
-         %68 = OpLoad %uint %jdx Aligned 4
-       %add8 = OpIAdd %uint %mul7 %68
-  %arrayidx9 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %64 %add8
-               OpStore %arrayidx9 %63 Aligned 4
+         %56 = OpLoad %uint %sum Aligned 4
+         %57 = OpLoad %_ptr_CrossWorkgroup_uint %c_addr Aligned 4
+         %58 = OpLoad %uint %jdx Aligned 4
+  %arrayidx4 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %57 %58
+               OpStore %arrayidx4 %56 Aligned 4
                OpReturn
                OpFunctionEnd
-         %71 = OpFunction %void DontInline %8
+         %60 = OpFunction %void DontInline %8
         %a_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
         %b_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
         %c_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
-         %75 = OpLabel
-         %76 = OpFunctionCall %void %mxm %a_0 %b_0 %c_0
+         %64 = OpLabel
+         %65 = OpFunctionCall %void %mxm %a_0 %b_0 %c_0
                OpReturn
                OpFunctionEnd
